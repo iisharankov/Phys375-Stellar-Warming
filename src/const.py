@@ -1,4 +1,6 @@
 import multiprocessing
+# import numba
+# from numba.cuda import gpus
 
 # General Constants
 MASS_E = 9.10938291e-31  # electron mass
@@ -21,4 +23,5 @@ L_SUN = 3.827e26  # watts
 
 
 # Other
-NUM_OF_CORES = multiprocessing.cpu_count()
+# NUM_OF_CORES = multiprocessing.cpu_count()
+# GPU = gpus
