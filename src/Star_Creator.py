@@ -17,7 +17,7 @@ HBAR = 1.054571817e-34
 RAD_CONST= (4*STEF_BOLT)/C  # radiation constant
 X = 0.73  # Hydrogen mass fraction
 Y = 0.25  # Helium mass fraction
-Z = 0.02  # Metals mass fraction)
+Z = 0.02  # Metals mass fraction)k
 GAMMA = 5/3  # adiabatic constant
 M_SUN = 1.989e30  # Kg
 R_SUN = 6.955e8  # meters
@@ -25,6 +25,7 @@ L_SUN = 3.827e26  # watts
 ION_GAS_APPROX = (2 * X + 0.75 * Y + 0.5 * Z) ** -1  # approximation for ionized gas? u = 2X + 0.75Y + 0.5Z
 KAPPA = 1
 K = 1.38e-23
+pi = np.pi
 
 mu = (2.0 * X + 0.75 * Y + 0.5 * Z) ** (-1.0)
 r0 = 0.001  # m
@@ -39,9 +40,6 @@ def P(density, temp):
     # Eqn 5 in the project_description
     P_deg = (pow((3.0 * pi ** 2.0), (2/3)) * pow(HBAR, 2) * pow(density / MASS_P, 5/3)) / (5.0 * MASS_E)
 
-
-    # NOTE: Another group used these below equaitions too, but they're probably from the pressure group.
-    # For us, i don't think we need these next two
     # Pressure Ideal Gas
     P_ig = (K * temp * density) / (mu * MASS_P)
 
@@ -188,7 +186,7 @@ class SingleStar:
         self.k = [Kappa(rho_c, temp_c)]
         self.p = [P(rho_c, temp_c)]
         self.dLdr_list = [0.0]
-
+        print(f"the gamma is {GAMMA}")
         self.dlogPdlogT = [(temp_c / P(rho_c, temp_c)) *
                            (dPdr(r0, self.m[-1], rho_c) /
                             dTdr(r0, self.m[-1], rho_c, temp_c, self.l[-1]))]
@@ -235,7 +233,7 @@ class SingleStar:
 
         self.dtauarray.append(d_tau)  # unimportant list
 
-        if d_tau < 0.0001 or self.m[-1] > (1.0e3) * M_SUN:
+        if d_tau < 0.001 or self.m[-1] > 1e3 * M_SUN:
             return True
         else:
             return False
@@ -302,82 +300,234 @@ class SingleStar:
         star_radius = self.Rstar
 
         if plotmode:
-            # plot the data
-            plt.figure(1)
-            plt.grid()
+            # # plot the data
+            # plt.figure(1)
+            # plt.grid()
             x_axis = r / self.r[-1]
-            plt.plot(x_axis, rho / self.d[0], label='rho')
-            plt.plot(x_axis, temp / self.t[0], label='temp')
-            plt.plot(x_axis, mass / self.m[-1], label='Mass')
-            plt.plot(x_axis, lum / self.l[-1], label='Lum')
-            plt.legend(loc='best', bbox_to_anchor=(0.8, 0.66), prop={'size': 11})
-            plt.title("Rho", fontsize=25)
-            plt.savefig('Fig1.png')
-            plt.show()
+            #
+            # plt.plot(x_axis, rho / self.d[0], label='rho')
+            # plt.plot(x_axis, temp / self.t[0], label='temp')
+            # plt.plot(x_axis, mass / self.m[-1], label='Mass')
+            # plt.plot(x_axis, lum / self.l[-1], label='Lum')
+            # plt.legend(loc='best', bbox_to_anchor=(0.8, 0.66), prop={'size': 11})
+            # # plt.title("Rho", fontsize=25)
+            # plt.xlabel("r/R.")
+            # plt.ylabel("$\\rho/\\rho_{c}$, $T/T_{c}$, $M/M.$, $L/L.$")
+            # plt.savefig(f'Multi-Lined Plot.png', dpi=1000)
+            # plt.show()
+            # plt.clf()
+            # self.plotdata = (x_axis, rho / self.d[0], temp / self.t[0], mass / self.m[-1], lum / self.l[-1])
+            # print(self.d[0], "is the rho")
+            # print(self.t[0], "is the temp")
+            # print(self.t[-1], "is the surface temp")
+            # print(self.m[-1], "is the mass")
+            # print(self.l[-1], "is the lum")
+            # print(self.r[-1], "is the radius")
 
-            plt.figure(2)
-            plt.grid()
-            plt.plot(x_axis, temp/self.t[0], label='temp')
-            plt.title("Temp", fontsize=25)
-            plt.show()
-
-            plt.figure(3)
-            plt.grid()
-            plt.plot(x_axis, mass/self.m[-1], label='Mass')
-            plt.title("Mass", fontsize=25)
-            plt.show()
-
-            plt.figure(4)
-            plt.grid()
-            plt.plot(x_axis, lum/self.l[-1], label='Lum')
-            plt.title("Lum", fontsize=25)
-            plt.show()
-
-
+            # plt.figure(2)
+            # plt.grid()
+            # plt.plot(x_axis, temp / self.t[0], label='temp')
+            # plt.title("Temperature", fontsize=25)
+            # plt.ylabel("$T/T_c$")
+            # plt.xlabel("r/R.")
+            # plt.savefig(f"Temp.png", dpi=1000)
+            # plt.clf()
+            #
+            # plt.figure(3)
+            # plt.grid()
+            # plt.plot(x_axis, mass / self.m[-1], label='Mass')
+            # plt.title("Mass", fontsize=25)
+            # plt.xlabel("r/R.")
+            # plt.ylabel("$M/M.$")
+            # plt.savefig(f"Mass.png", dpi=1000)
+            # plt.clf()
+            #
+            # plt.figure(4)
+            # plt.grid()
+            # plt.plot(x_axis, lum / self.l[-1], label='Lum')
+            # plt.title("Luminosity", fontsize=25)
+            # plt.xlabel("r/R.")
+            # plt.ylabel("$L/L.$")
+            # plt.savefig(f"Luminosity.png", dpi=1000)
+            # plt.clf()
+            #
             # plt.figure(9)
             # plt.grid()
             # plt.plot(r / self.r[star_radius], tau / self.tau[-1], label='Tau')
             # plt.title("Tau", fontsize=25)
-            # plt.savefig('Tau.png', dpi=1000)
-            # plt.show()
+            # plt.xlabel("r/R.")
+            # plt.ylabel("$\\tau/\\tau_{c}$")
+            # plt.savefig(f'Tau.png', dpi=1000)
+            # plt.clf()
             #
             # plt.figure(5)
             # plt.grid()
             # plt.plot(r / self.r[star_radius], dLdr / (self.l[-1] / self.r[star_radius]), label='dL/dR')
-            # plt.title("dLdR", fontsize=25)
-            # plt.savefig('dLdR.png', dpi=1000)
-            # plt.show()
+            # plt.title("dL/dR", fontsize=25)
+            # plt.xlabel("r/R.")
+            # plt.ylabel("$dL/dr$ $(L./R.)$")
+            # plt.savefig(f'dLdR.png', dpi=1000)
+            # plt.clf()
             #
             # plt.figure(6)
             # plt.grid()
             # plt.legend(loc='best', bbox_to_anchor=(0.8, 0.66), prop={'size': 11})
             # plt.plot(r / self.r[star_radius], pressure / self.p[0], label='Pressure')
             # plt.title("Pressure", fontsize=25)
-            # plt.savefig('Pressure.png', dpi=1000)
-            # plt.show()
+            # plt.xlabel("r/R.")
+            # plt.ylabel("$P/P_c$")
+            # plt.savefig(f'Pressure.png', dpi=1000)
+            # plt.clf()
             #
             # plt.figure(7)
             # plt.grid()
             # plt.plot(r / self.r[star_radius], np.log10(kappa), label='Opacity')
             # plt.title("Opacity", fontsize=25)
-            # plt.savefig('Opacity.png', dpi=1000)
-            # plt.show()
+            # plt.xlabel("r/R.")
+            # plt.ylabel("$\\log_{10}(\\kappa)$ ($cm^{2}/g$)")
+            # plt.savefig(f'Opacity.png', dpi=1000)
+            # plt.clf()
             #
             # plt.figure(8)
             # axes = plt.gca()
-            # # axes.set_xlim(0,11)
             # axes.set_ylim(0, 10)
+            # axes.set_xlim(0, 1)
             # plt.grid()
             # plt.plot(r / self.r[star_radius], self.dlogPdlogT, label='dlogP/dlogT')
             # plt.title("dlogP/dlogT", fontsize=25)
-            # plt.savefig('dlogP-dlogT.png', dpi=1000)
-            # plt.show()
+            # plt.xlabel("r/R.")
+            # plt.ylabel("dlogP/dlogT")
+            # plt.savefig(f'dlogP-dlogT.png', dpi=1000)
+            # plt.clf()
+            
+            
+        # if plotmode:
+        #     # plot the data
+        #     plt.figure(1)
+        #     plt.grid()
+        #     x_axis = r / self.r[-1]
+        #     plt.plot(x_axis, rho / self.d[0], label='rho')
+        #     plt.plot(x_axis, temp / self.t[0], label='temp')
+        #     plt.plot(x_axis, mass / self.m[-1], label='Mass')
+        #     plt.plot(x_axis, lum / self.l[-1], label='Lum')
+        #     plt.legend(loc='best', bbox_to_anchor=(0.8, 0.66), prop={'size': 11})
+        #     plt.title("Rho", fontsize=25)
+        #     plt.savefig('Fig1.png')
+        #     plt.show()
+        #     #
+        #     plt.figure(2)
+        #     plt.grid()
+        #     plt.plot(x_axis, temp/self.t[0], label='temp')
+        #     plt.title("Temp", fontsize=25)
+        #     plt.show()
+        # 
+        #     plt.figure(3)
+        #     plt.grid()
+        #     plt.plot(x_axis, mass/self.m[-1], label='Mass')
+        #     plt.title("Mass", fontsize=25)
+        #     plt.show()
+        # 
+        #     plt.figure(4)
+        #     plt.grid()
+        #     plt.plot(x_axis, lum/self.l[-1], label='Lum')
+        #     plt.title("Lum", fontsize=25)
+        #     plt.show()
+        # 
+        # 
+        #     plt.figure(9)
+        #     plt.grid()
+        #     plt.plot(r / self.r[star_radius], tau / self.tau[-1], label='Tau')
+        #     plt.title("Tau", fontsize=25)
+        #     plt.savefig('Tau.png', dpi=1000)
+        #     plt.show()
+        # 
+        #     plt.figure(5)
+        #     plt.grid()
+        #     plt.plot(r / self.r[star_radius], dLdr / (self.l[-1] / self.r[star_radius]), label='dL/dR')
+        #     plt.title("dLdR", fontsize=25)
+        #     plt.savefig('dLdR.png', dpi=1000)
+        #     plt.show()
+        # 
+        #     plt.figure(6)
+        #     plt.grid()
+        #     plt.plot(r / self.r[star_radius], pressure / self.p[0], label='Pressure')
+        #     plt.title("Pressure", fontsize=25)
+        #     plt.savefig('Pressure.png', dpi=1000)
+        #     plt.legend(loc='best', bbox_to_anchor=(0.8, 0.66), prop={'size': 11})
+        #     plt.show()
+        # 
+        #     plt.figure(7)
+        #     plt.grid()
+        #     plt.plot(r / self.r[star_radius], np.log10(kappa), label='Opacity')
+        #     plt.title("Opacity", fontsize=25)
+        #     plt.savefig('Opacity.png', dpi=1000)
+        #     plt.show()
+        # 
+        #     plt.figure(8)
+        #     axes = plt.gca()
+        #     # axes.set_xlim(0,11)
+        #     axes.set_ylim(0, 10)
+        #     plt.grid()
+        #     plt.plot(r / self.r[star_radius], self.dlogPdlogT, label='dlogP/dlogT')
+        #     plt.title("dlogP/dlogT", fontsize=25)
+        #     plt.savefig('dlogP-dlogT.png', dpi=1000)
+        #     plt.show()
+
+#
+# class FixDensity:
+#
+#     def __init__(self, h, temp_c):
+#         self.h = h
+#         self.central_temp = temp_c
+#
+#         self.starA = SingleStar(self.h, 3e3, temp_c, False)
+#         self.starB = SingleStar(self.h, 5e4, temp_c, False)
+#         self.starC = SingleStar(self.h, (0.3e3 + 500.0e3) / 2.0, temp_c, False)
+#
+#         self.BestStar = self.bisection(self.starA, self.starB, self.starC, 0.02)
+#
+#
+#     def f(self, trialstar):
+#
+#         RstarIndex = trialstar.Rstar
+#         Lum1 = trialstar.l[RstarIndex]
+#         Lum2 = (4.0 * pi * STEF_BOLT * (trialstar.r[RstarIndex] ** 2.0) * (trialstar.t[RstarIndex] ** 4.0))
+#
+#         return (Lum1 - Lum2) / np.sqrt(Lum1 * Lum2)
+#
+#     def bisection(self, starA, starB, starC, tol):
+#
+#         while (starB.d[0] - starA.d[0]) > tol:
+#
+#             if self.f(starA) * self.f(starC) < 0:
+#                 starB = starC
+#
+#             else:
+#                 starA = starC
+#
+#             starCrho = (starA.d[0] + starB.d[0]) / 2.0
+#
+#             starC = SingleStar(self.h, starCrho, self.central_temp, False)
+#
+#         starCrho = max(starA.d[0], starB.d[0])
+#         star_C = SingleStar(self.h, starCrho, self.central_temp, True)
+#         return star_C
+#
+#
+#
 
 
 def main():
     start_class = time.time()
-    SingleStar(1000.0, 0.5e3, 1.5e7, 1)
+    SingleStar(1000.0, 0.5e3, 1.5e7, 0)
+    # tempCs = np.linspace(10 ** 6.6, 10 ** 7.4, 16)
+    # star = FixDensity(1000.0, 2.11e7).BestStar
+    # print("star mass: ", star.m[-1])
+    # print("star radius: ",  star.r[-1])
     print(f"Star took: {time.time() - start_class} seconds")
+
+
+# dr, rho_c, temp_c,
 
 if __name__ == '__main__':
     main()
